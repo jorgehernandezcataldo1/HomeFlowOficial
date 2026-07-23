@@ -1,0 +1,116 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model IEnumerable<HomeFlowOficial.Models.ViewModels.PropietarioListItemViewModel>
+@{
+    ViewData["Title"] = "Propietarios";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Propietarios</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearPropietario">
+        + Nuevo propietario
+    </button>
+</div>
+
+<div id="alertaContenedor"></div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>RUT</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Inmuebles</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTablaPropietarios">
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Rut</td>
+                <td>@p.NombreCompleto</td>
+                <td>@p.Correo</td>
+                <td>@p.Telefono</td>
+                <td><span class="badge bg-secondary">@p.CantidadInmuebles</span></td>
+                <td>
+                    <a asp-action="Detalle" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">Ver</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal declarativo: se abre/cierra vía atributos data-bs-*, sin instanciar bootstrap.Modal() por JS -->
+<div class="modal fade" id="modalCrearPropietario" tabindex="-1" aria-labelledby="modalCrearPropietarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="formCrearPropietario" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCrearPropietarioLabel">Nuevo propietario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">RUT</label>
+                            <input type="text" class="form-control" name="Rut" placeholder="12345678-9" required />
+                            <div class="invalid-feedback" data-field="Rut"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Nombres</label>
+                            <input type="text" class="form-control" name="Nombres" required />
+                            <div class="invalid-feedback" data-field="Nombres"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Apellido paterno</label>
+                            <input type="text" class="form-control" name="ApellidoPaterno" required />
+                            <div class="invalid-feedback" data-field="ApellidoPaterno"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Apellido materno</label>
+                            <input type="text" class="form-control" name="ApellidoMaterno" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Correo</label>
+                            <input type="email" class="form-control" name="Correo" required />
+                            <div class="invalid-feedback" data-field="Correo"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" name="Telefono" placeholder="+56 9 ..." />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" name="Direccion" required />
+                            <div class="invalid-feedback" data-field="Direccion"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Estado civil</label>
+                            <select class="form-select" name="EstadoCivilId" required>
+                                <option value="">Selecciona...</option>
+                                @foreach (SelectListItem item in (SelectList)ViewBag.EstadosCiviles)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback" data-field="EstadoCivilId"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCerrarModalCrear">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/propietarios.js" asp-append-version="true"></script>
+}

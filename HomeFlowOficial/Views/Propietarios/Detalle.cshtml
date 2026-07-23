@@ -1,0 +1,40 @@
+@model HomeFlowOficial.Models.Propietario
+@{
+    ViewData["Title"] = "Detalle propietario";
+}
+
+<h2>@Model.Persona.Nombres @Model.Persona.ApellidoPaterno</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">RUT</dt>
+    <dd class="col-sm-9">@Model.Persona.Rut</dd>
+
+    <dt class="col-sm-3">Correo</dt>
+    <dd class="col-sm-9">@Model.Persona.Correo</dd>
+
+    <dt class="col-sm-3">Teléfono</dt>
+    <dd class="col-sm-9">@Model.Persona.Telefono</dd>
+
+    <dt class="col-sm-3">Dirección</dt>
+    <dd class="col-sm-9">@Model.Persona.Direccion</dd>
+
+    <dt class="col-sm-3">Estado civil</dt>
+    <dd class="col-sm-9">@Model.Persona.EstadoCivil?.Nombre</dd>
+</dl>
+
+<h4>Inmuebles asociados</h4>
+@if (Model.Inmuebles.Any())
+{
+    <ul class="list-group">
+        @foreach (var inmueble in Model.Inmuebles)
+        {
+            <li class="list-group-item">@inmueble.Direccion — @inmueble.Estado</li>
+        }
+    </ul>
+}
+else
+{
+    <p class="text-muted">Este propietario todavía no tiene inmuebles ingresados.</p>
+}
+
+<a asp-action="Index" class="btn btn-outline-secondary mt-3">Volver</a>
