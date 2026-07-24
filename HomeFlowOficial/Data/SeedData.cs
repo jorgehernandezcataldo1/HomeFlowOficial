@@ -1,7 +1,9 @@
 using HomeFlowOficial.Models.Catalogos;
+using HomeFlowOficial.Models.Enums;
 using HomeFlowOficial.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.PortableExecutable;
 
 namespace HomeFlowOficial.Data
 {
@@ -53,6 +55,74 @@ namespace HomeFlowOficial.Data
                     new TipoCercania { Nombre = "Parque" },
                     new TipoCercania { Nombre = "Hospital / Consultorio" },
                     new TipoCercania { Nombre = "Locomoción colectiva" });
+            }
+
+            if (!await context.EstadosInmueble.AnyAsync())
+            {
+                context.EstadosInmueble.AddRange(
+
+                    new EstadoInmueble { Nombre = "Pendiente" },
+
+                    new EstadoInmueble { Nombre = "En trámite" },
+
+                    new EstadoInmueble { Nombre = "Publicado" },
+
+                    new EstadoInmueble { Nombre = "Reservado" },
+
+                    new EstadoInmueble { Nombre = "Arrendado" },
+
+                    new EstadoInmueble { Nombre = "Vendido" }
+
+                );
+            }
+
+            if (!await context.TiposOperacion.AnyAsync())
+            {
+                context.TiposOperacion.AddRange(
+
+                    new TipoOperacion { Nombre = "Arriendo" },
+
+                    new TipoOperacion { Nombre = "Venta" }
+
+                );
+            }
+
+            if (!await context.CategoriasInmueble.AnyAsync())
+            {
+                context.CategoriasInmueble.AddRange(
+
+                    new CategoriaInmueble { Nombre = "Habitacional" },
+
+                    new CategoriaInmueble { Nombre = "Comercial" },
+
+                    new CategoriaInmueble { Nombre = "Industrial" },
+
+                    new CategoriaInmueble { Nombre = "Agrícola" }
+
+                );
+            }
+
+            if (!await context.Caracteristicas.AnyAsync())
+            {
+                context.Caracteristicas.AddRange(
+
+                    new Caracteristica { Nombre = "Dormitorios", TipoDato = "Numero" },
+
+                    new Caracteristica { Nombre = "Baños", TipoDato = "Numero" },
+
+                    new Caracteristica { Nombre = "Bodega", TipoDato = "Boolean" },
+
+                    new Caracteristica { Nombre = "Estacionamiento", TipoDato = "Boolean" },
+
+                    new Caracteristica { Nombre = "Terraza", TipoDato = "Boolean" },
+
+                    new Caracteristica { Nombre = "Piscina", TipoDato = "Boolean" },
+
+                    new Caracteristica { Nombre = "Metros Construidos", TipoDato = "Decimal" },
+
+                    new Caracteristica { Nombre = "Metros Totales", TipoDato = "Decimal" }
+
+                );
             }
 
             await context.SaveChangesAsync();

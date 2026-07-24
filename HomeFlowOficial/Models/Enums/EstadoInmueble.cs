@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HomeFlowOficial.Models.Enums
 {
     public enum EstadoInmueble

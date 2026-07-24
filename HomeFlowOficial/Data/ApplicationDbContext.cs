@@ -1,9 +1,11 @@
 using HomeFlowOficial.Models;
 using HomeFlowOficial.Models.Catalogos;
 using HomeFlowOficial.Models.Checklist;
+using HomeFlowOficial.Models.Enums;
 using HomeFlowOficial.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.PortableExecutable;
 
 namespace HomeFlowOficial.Data
 {
@@ -22,6 +24,18 @@ namespace HomeFlowOficial.Data
         public DbSet<EstadoCivil> EstadosCiviles => Set<EstadoCivil>();
         public DbSet<TipoInmueble> TiposInmueble => Set<TipoInmueble>();
         public DbSet<TipoCercania> TiposCercania => Set<TipoCercania>();
+
+        public DbSet<EstadoInmueble> EstadosInmueble => Set<EstadoInmueble>();
+
+        public DbSet<TipoOperacion> TiposOperacion => Set<TipoOperacion>();
+
+        //public DbSet<CategoriaInmueble> CategoriasInmueble => Set<CategoriaInmueble>();
+
+        //public DbSet<Caracteristica> Caracteristicas => Set<Caracteristica>();
+
+        //public DbSet<InmuebleCaracteristica> InmuebleCaracteristicas => Set<InmuebleCaracteristica>();
+
+        public DbSet<PersonaRol> PersonaRoles => Set<PersonaRol>();
 
         public DbSet<ChecklistPlantilla> ChecklistPlantillas => Set<ChecklistPlantilla>();
         public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
