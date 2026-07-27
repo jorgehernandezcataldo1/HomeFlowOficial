@@ -33,6 +33,14 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllersWithViews();
 
+// Permite validar el token antiforgery también cuando viaja por header en vez de
+// un campo de formulario (necesario para los POST que mandan JSON puro vía $.ajax,
+// como el de guardar checklist).
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

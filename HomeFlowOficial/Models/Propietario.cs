@@ -1,23 +1,27 @@
 using HomeFlowOficial.Models;
 using HomeFlowOficial.Models.Identity;
 
-public class Propietario
+
+namespace HomeFlowOficial.Models
 {
-    public int Id { get; set; }
+    public class Propietario
+    {
+        public int Id { get; set; }
 
-    public int PersonaId { get; set; }
+        public int PersonaId { get; set; }
 
-    public Persona Persona { get; set; } = null!;
+        public Persona Persona { get; set; } = null!;
 
-    public string? Observaciones { get; set; }
+        public string? Observaciones { get; set; }
 
-    public DateTime FechaIngreso { get; set; } = DateTime.UtcNow;
+        public DateTime FechaIngreso { get; set; } = DateTime.UtcNow;
 
-    public bool ChecklistAprobado { get; set; }
+        public bool ChecklistAprobado { get; set; }
 
-    public string? UsuarioIngresoId { get; set; }
+        public string? UsuarioIngresoId { get; set; }
 
-    public ApplicationUser? UsuarioIngreso { get; set; }
+        public ApplicationUser? UsuarioIngreso { get; set; }
 
-    public ICollection<Inmueble> Inmuebles { get; set; } = new List<Inmueble>();
+        public ICollection<Inmueble> Inmuebles { get; set; } = new List<Inmueble>();
+    }
 }

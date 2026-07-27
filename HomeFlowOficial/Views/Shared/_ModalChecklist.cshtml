@@ -1,0 +1,32 @@
+﻿<!-- Modal declarativo y único para todos los checklists del sistema.
+     Se abre desde cualquier botón con data-bs-toggle="modal" data-bs-target="#modalChecklist"
+     + data-tipo-entidad / data-entidad-id / data-nombre. El contenido se llena vía AJAX
+     al escuchar el evento nativo "show.bs.modal" que dispara Bootstrap (no se instancia
+     el modal por JS, solo se reacciona a su apertura declarativa). -->
+<div class="modal fade" id="modalChecklist" tabindex="-1" aria-labelledby="modalChecklistLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="formChecklist" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="checklistPlantillaId" name="ChecklistPlantillaId" />
+                <input type="hidden" id="checklistTipoEntidad" name="TipoEntidad" />
+                <input type="hidden" id="checklistEntidadId" name="EntidadId" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalChecklistLabel">Checklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3" id="checklistNombrePlantilla"></p>
+                    <div id="checklistItemsContenedor"></div>
+                    <div id="checklistSinDatos" class="text-muted d-none">
+                        No hay un checklist configurado para este tipo todavía.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCerrarModalChecklist">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarChecklist">Guardar checklist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

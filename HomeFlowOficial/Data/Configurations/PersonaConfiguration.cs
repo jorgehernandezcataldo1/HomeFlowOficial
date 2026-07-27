@@ -39,9 +39,6 @@ namespace HomeFlowOficial.Data.Configurations
             builder.Property(x => x.Direccion)
                 .HasMaxLength(250);
 
-            builder.Property(x => x.RowVersion)
-                .IsRowVersion();
-
             builder.HasOne(x => x.EstadoCivil)
                 .WithMany()
                 .HasForeignKey(x => x.EstadoCivilId)

@@ -57,72 +57,50 @@ namespace HomeFlowOficial.Data
                     new TipoCercania { Nombre = "Locomoción colectiva" });
             }
 
-            if (!await context.EstadosInmueble.AnyAsync())
+            // EstadoInmueble y TipoOperacion son enum: sus valores viven en el código
+            // (Models/Enums), no se siembran filas para ellos.
+
+            // CategoriaInmueble y Caracteristica todavía no existen como entidades.
+            // Si más adelante quieres características dinámicas por tipo de inmueble
+            // (ej. "Piscina", "Terraza" configurables sin tocar código), avísame y
+            // armamos esas clases + su propio DbSet; por ahora TipoInmueble ya cubre
+            // la clasificación básica (Casa, Depto, Bodega, etc.).
+
+            await context.SaveChangesAsync();
+
+            // Checklists base: uno para Propietario y uno para Inmueble, que es el
+            // primer flujo que estás armando. Se pueden editar/ampliar después desde
+            // la propia tabla, sin volver a tocar código.
+            if (!await context.ChecklistPlantillas.AnyAsync(p => p.TipoEntidad == TipoEntidadChecklist.Propietario))
             {
-                context.EstadosInmueble.AddRange(
-
-                    new EstadoInmueble { Nombre = "Pendiente" },
-
-                    new EstadoInmueble { Nombre = "En trámite" },
-
-                    new EstadoInmueble { Nombre = "Publicado" },
-
-                    new EstadoInmueble { Nombre = "Reservado" },
-
-                    new EstadoInmueble { Nombre = "Arrendado" },
-
-                    new EstadoInmueble { Nombre = "Vendido" }
-
-                );
+                context.ChecklistPlantillas.Add(new HomeFlowOficial.Models.Checklist.ChecklistPlantilla
+                {
+                    Nombre = "Checklist Propietario",
+                    TipoEntidad = TipoEntidadChecklist.Propietario,
+                    Items = new List<HomeFlowOficial.Models.Checklist.ChecklistItem>
+                    {
+                        new() { Descripcion = "Cédula de identidad vigente", Orden = 1, Obligatorio = true },
+                        new() { Descripcion = "Verificación de dominio vigente (Conservador de Bienes Raíces)", Orden = 2, Obligatorio = true },
+                        new() { Descripcion = "Sin deudas de contribuciones", Orden = 3, Obligatorio = true },
+                        new() { Descripcion = "Datos de contacto verificados", Orden = 4, Obligatorio = false },
+                    }
+                });
             }
 
-            if (!await context.TiposOperacion.AnyAsync())
+            if (!await context.ChecklistPlantillas.AnyAsync(p => p.TipoEntidad == TipoEntidadChecklist.Inmueble))
             {
-                context.TiposOperacion.AddRange(
-
-                    new TipoOperacion { Nombre = "Arriendo" },
-
-                    new TipoOperacion { Nombre = "Venta" }
-
-                );
-            }
-
-            if (!await context.CategoriasInmueble.AnyAsync())
-            {
-                context.CategoriasInmueble.AddRange(
-
-                    new CategoriaInmueble { Nombre = "Habitacional" },
-
-                    new CategoriaInmueble { Nombre = "Comercial" },
-
-                    new CategoriaInmueble { Nombre = "Industrial" },
-
-                    new CategoriaInmueble { Nombre = "Agrícola" }
-
-                );
-            }
-
-            if (!await context.Caracteristicas.AnyAsync())
-            {
-                context.Caracteristicas.AddRange(
-
-                    new Caracteristica { Nombre = "Dormitorios", TipoDato = "Numero" },
-
-                    new Caracteristica { Nombre = "Baños", TipoDato = "Numero" },
-
-                    new Caracteristica { Nombre = "Bodega", TipoDato = "Boolean" },
-
-                    new Caracteristica { Nombre = "Estacionamiento", TipoDato = "Boolean" },
-
-                    new Caracteristica { Nombre = "Terraza", TipoDato = "Boolean" },
-
-                    new Caracteristica { Nombre = "Piscina", TipoDato = "Boolean" },
-
-                    new Caracteristica { Nombre = "Metros Construidos", TipoDato = "Decimal" },
-
-                    new Caracteristica { Nombre = "Metros Totales", TipoDato = "Decimal" }
-
-                );
+                context.ChecklistPlantillas.Add(new HomeFlowOficial.Models.Checklist.ChecklistPlantilla
+                {
+                    Nombre = "Checklist Inmueble",
+                    TipoEntidad = TipoEntidadChecklist.Inmueble,
+                    Items = new List<HomeFlowOficial.Models.Checklist.ChecklistItem>
+                    {
+                        new() { Descripcion = "Fotografías del inmueble", Orden = 1, Obligatorio = true },
+                        new() { Descripcion = "Gastos comunes al día", Orden = 2, Obligatorio = true },
+                        new() { Descripcion = "Estado de instalaciones (agua, luz, gas) revisado", Orden = 3, Obligatorio = true },
+                        new() { Descripcion = "Llaves / acceso disponible para visitas", Orden = 4, Obligatorio = false },
+                    }
+                });
             }
 
             await context.SaveChangesAsync();

@@ -541,12 +541,35 @@ namespace HomeFlowOficial.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Correo");
+
                     b.HasIndex("EstadoCivilId");
 
                     b.HasIndex("Rut")
                         .IsUnique();
 
-                    b.ToTable("Personas");
+                    b.ToTable("Personas", (string)null);
+                });
+
+            modelBuilder.Entity("HomeFlowOficial.Models.PersonaRol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PersonaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TipoRol")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonaId");
+
+                    b.ToTable("PersonaRoles");
                 });
 
             modelBuilder.Entity("HomeFlowOficial.Models.Propietario", b =>
@@ -563,13 +586,21 @@ namespace HomeFlowOficial.Migrations
                     b.Property<DateTime>("FechaIngreso")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PersonaId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UsuarioIngresoId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PersonaId")
                         .IsUnique();
+
+                    b.HasIndex("UsuarioIngresoId");
 
                     b.ToTable("Propietarios");
                 });
@@ -808,6 +839,17 @@ namespace HomeFlowOficial.Migrations
                     b.Navigation("EstadoCivil");
                 });
 
+            modelBuilder.Entity("HomeFlowOficial.Models.PersonaRol", b =>
+                {
+                    b.HasOne("HomeFlowOficial.Models.Persona", "Persona")
+                        .WithMany()
+                        .HasForeignKey("PersonaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Persona");
+                });
+
             modelBuilder.Entity("HomeFlowOficial.Models.Propietario", b =>
                 {
                     b.HasOne("HomeFlowOficial.Models.Persona", "Persona")
@@ -816,7 +858,13 @@ namespace HomeFlowOficial.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HomeFlowOficial.Models.Identity.ApplicationUser", "UsuarioIngreso")
+                        .WithMany()
+                        .HasForeignKey("UsuarioIngresoId");
+
                     b.Navigation("Persona");
+
+                    b.Navigation("UsuarioIngreso");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

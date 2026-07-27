@@ -28,6 +28,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Propietarios" asp-action="Index">Propietarios</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Inmueble" asp-action="Index">Inmuebles</a>
+                            </li>
                         }
                     </ul>
                     <ul class="navbar-nav">
@@ -64,9 +67,19 @@
             &copy; 2026 - HomeFlowOficial - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <partial name="_ModalChecklist" />
+    }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script src="~/js/checklist.js" asp-append-version="true"></script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

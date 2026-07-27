@@ -9,5 +9,6 @@ namespace HomeFlowOficial.Models.ViewModels
         public string Correo { get; set; } = string.Empty;
         public string? Telefono { get; set; }
         public int CantidadInmuebles { get; set; }
+        public bool ChecklistAprobado { get; set; }
     }
 }

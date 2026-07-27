@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
+@using HomeFlowOficial.Models.Enums
 @model IEnumerable<HomeFlowOficial.Models.ViewModels.PropietarioListItemViewModel>
 @{
     ViewData["Title"] = "Propietarios";
@@ -22,6 +23,7 @@
                 <th>Correo</th>
                 <th>Teléfono</th>
                 <th>Inmuebles</th>
+                <th>Checklist</th>
                 <th></th>
             </tr>
         </thead>
@@ -35,6 +37,23 @@
                 <td>@p.Telefono</td>
                 <td><span class="badge bg-secondary">@p.CantidadInmuebles</span></td>
                 <td>
+                    @if (p.ChecklistAprobado)
+                    {
+                        <span class="badge bg-success">Aprobado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    }
+                </td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            data-bs-toggle="modal" data-bs-target="#modalChecklist"
+                            data-tipo-entidad="@((int)TipoEntidadChecklist.Propietario)"
+                            data-entidad-id="@p.Id"
+                            data-nombre="@p.NombreCompleto">
+                        Checklist
+                    </button>
                     <a asp-action="Detalle" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">Ver</a>
                 </td>
             </tr>

@@ -31,7 +31,8 @@ namespace HomeFlowOficial.Controllers
                     NombreCompleto = p.Persona.Nombres + " " + p.Persona.ApellidoPaterno,
                     Correo = p.Persona.Correo,
                     Telefono = p.Persona.Telefono,
-                    CantidadInmuebles = p.Inmuebles.Count
+                    CantidadInmuebles = p.Inmuebles.Count,
+                    ChecklistAprobado = p.ChecklistAprobado
                 })
                 .ToListAsync();
 

@@ -1,0 +1,236 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using HomeFlowOficial.Models.Enums
+@model IEnumerable<HomeFlowOficial.Models.ViewModels.InmuebleListItemViewModel>
+@{
+    ViewData["Title"] = "Inmuebles";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Inmuebles</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearInmueble">
+        + Nuevo inmueble
+    </button>
+</div>
+
+<div id="alertaContenedor"></div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Dirección</th>
+                <th>Comuna</th>
+                <th>Tipo</th>
+                <th>Propietario</th>
+                <th>Operación</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Checklist</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTablaInmuebles">
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="9" class="text-center text-muted py-4">
+                    Todavía no hay inmuebles ingresados. Primero necesitas al menos un propietario creado.
+                </td>
+            </tr>
+        }
+        @foreach (var i in Model)
+        {
+            <tr>
+                <td>@i.Direccion</td>
+                <td>@i.Comuna</td>
+                <td>@i.TipoInmuebleNombre</td>
+                <td>@i.PropietarioNombre</td>
+                <td>@i.TipoOperacion</td>
+                <td>$@i.Precio.ToString("N0")</td>
+                <td><span class="badge bg-info text-dark">@i.Estado</span></td>
+                <td>
+                    @if (i.ChecklistAprobado)
+                    {
+                        <span class="badge bg-success">Aprobado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    }
+                </td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            data-bs-toggle="modal" data-bs-target="#modalChecklist"
+                            data-tipo-entidad="@((int)TipoEntidadChecklist.Inmueble)"
+                            data-entidad-id="@i.Id"
+                            data-nombre="@i.Direccion">
+                        Checklist
+                    </button>
+                    <a asp-action="Detalle" asp-route-id="@i.Id" class="btn btn-sm btn-outline-primary">Ver</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal declarativo: se abre/cierra vía atributos data-bs-*, sin instanciar bootstrap.Modal() por JS -->
+<div class="modal fade" id="modalCrearInmueble" tabindex="-1" aria-labelledby="modalCrearInmuebleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form id="formCrearInmueble" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCrearInmuebleLabel">Nuevo inmueble</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Propietario</label>
+                            <select class="form-select" name="PropietarioId" required>
+                                <option value="">Selecciona...</option>
+                                @foreach (SelectListItem item in (SelectList)ViewBag.Propietarios)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback" data-field="PropietarioId"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo de inmueble</label>
+                            <select class="form-select" name="TipoInmuebleId" required>
+                                <option value="">Selecciona...</option>
+                                @foreach (SelectListItem item in (SelectList)ViewBag.TiposInmueble)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback" data-field="TipoInmuebleId"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Operación</label>
+                            <select class="form-select" name="TipoOperacion" required>
+                                @foreach (var item in Html.GetEnumSelectList<TipoOperacion>())
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback" data-field="TipoOperacion"></div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" name="Direccion" required />
+                            <div class="invalid-feedback" data-field="Direccion"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Comuna</label>
+                            <input type="text" class="form-control" name="Comuna" required />
+                            <div class="invalid-feedback" data-field="Comuna"></div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Piso</label>
+                            <input type="number" class="form-control" name="Piso" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Torre</label>
+                            <input type="text" class="form-control" name="Torre" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">N° depto</label>
+                            <input type="text" class="form-control" name="NumeroDepto" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Dormitorios</label>
+                            <input type="number" class="form-control" name="Habitaciones" value="0" required />
+                            <div class="invalid-feedback" data-field="Habitaciones"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Baños</label>
+                            <input type="number" class="form-control" name="Banos" value="0" required />
+                            <div class="invalid-feedback" data-field="Banos"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Estacionamientos</label>
+                            <input type="number" class="form-control" name="Estacionamientos" value="0" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Superficie útil (m²)</label>
+                            <input type="number" step="0.01" class="form-control" name="SuperficieUtilM2" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Superficie total (m²)</label>
+                            <input type="number" step="0.01" class="form-control" name="SuperficieTotalM2" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control" name="Precio" required />
+                            <div class="invalid-feedback" data-field="Precio"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Gasto común</label>
+                            <input type="number" step="0.01" class="form-control" name="GastoComun" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Agua (aprox.)</label>
+                            <input type="number" step="0.01" class="form-control" name="GastoAguaEstimado" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Luz (aprox.)</label>
+                            <input type="number" step="0.01" class="form-control" name="GastoLuzEstimado" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Gas (aprox.)</label>
+                            <input type="number" step="0.01" class="form-control" name="GastoGasEstimado" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Monto contribuciones</label>
+                            <input type="number" step="0.01" class="form-control" name="MontoContribuciones" />
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="TieneBodega" value="true" id="chkBodega" />
+                                <label class="form-check-label" for="chkBodega">Bodega</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="PagaContribuciones" value="true" id="chkContribuciones" />
+                                <label class="form-check-label" for="chkContribuciones">Paga contribuciones</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="Amoblado" value="true" id="chkAmoblado" />
+                                <label class="form-check-label" for="chkAmoblado">Amoblado</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="Equipado" value="true" id="chkEquipado" />
+                                <label class="form-check-label" for="chkEquipado">Equipado</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="AceptaMascotas" value="true" id="chkMascotas" />
+                                <label class="form-check-label" for="chkMascotas">Acepta mascotas</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" name="Descripcion" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCerrarModalCrearInmueble">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/inmueble.js" asp-append-version="true"></script>
+}

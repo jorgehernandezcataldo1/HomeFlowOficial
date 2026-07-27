@@ -1,0 +1,65 @@
+﻿@using HomeFlowOficial.Models.Enums
+@model HomeFlowOficial.Models.Inmueble
+@{
+    ViewData["Title"] = "Detalle inmueble";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@Model.Direccion</h2>
+    <button type="button" class="btn btn-outline-secondary"
+            data-bs-toggle="modal" data-bs-target="#modalChecklist"
+            data-tipo-entidad="@((int)TipoEntidadChecklist.Inmueble)"
+            data-entidad-id="@Model.Id"
+            data-nombre="@Model.Direccion">
+        Checklist
+        @if (Model.ChecklistAprobado)
+        {
+            <span class="badge bg-success ms-1">Aprobado</span>
+        }
+        else
+        {
+            <span class="badge bg-warning text-dark ms-1">Pendiente</span>
+        }
+    </button>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Propietario</dt>
+    <dd class="col-sm-9">@Model.Propietario.Persona.Nombres @Model.Propietario.Persona.ApellidoPaterno</dd>
+
+    <dt class="col-sm-3">Tipo</dt>
+    <dd class="col-sm-9">@Model.TipoInmueble.Nombre — @Model.TipoOperacion</dd>
+
+    <dt class="col-sm-3">Comuna</dt>
+    <dd class="col-sm-9">@Model.Comuna, @Model.Region</dd>
+
+    <dt class="col-sm-3">Dormitorios / Baños</dt>
+    <dd class="col-sm-9">@Model.Habitaciones dormitorios, @Model.Banos baños</dd>
+
+    <dt class="col-sm-3">Precio</dt>
+    <dd class="col-sm-9">$@Model.Precio.ToString("N0")</dd>
+
+    <dt class="col-sm-3">Estado</dt>
+    <dd class="col-sm-9"><span class="badge bg-info text-dark">@Model.Estado</span></dd>
+
+    @if (Model.Cercanias.Any())
+    {
+        <dt class="col-sm-3">Cercanías</dt>
+        <dd class="col-sm-9">
+            <ul class="list-unstyled mb-0">
+                @foreach (var c in Model.Cercanias)
+                {
+                    <li>@c.TipoCercania.Nombre — @c.Nombre (@c.DistanciaMetros m)</li>
+                }
+            </ul>
+        </dd>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
+    {
+        <dt class="col-sm-3">Descripción</dt>
+        <dd class="col-sm-9">@Model.Descripcion</dd>
+    }
+</dl>
+
+<a asp-action="Index" class="btn btn-outline-secondary mt-3">Volver</a>

@@ -1,5 +1,5 @@
 $(function () {
-    const $formulario = $('#formCrearPropietario');
+    const $formulario = $('#formCrearInmueble');
     if ($formulario.length === 0) return;
 
     $formulario.on('submit', function (evento) {
@@ -10,16 +10,16 @@ $(function () {
         const token = $formulario.find('input[name="__RequestVerificationToken"]').val();
 
         $.ajax({
-            url: '/Propietarios/Crear',
+            url: '/Inmueble/Crear',
             type: 'POST',
             data: datos,
-            processData: false,
-            contentType: false,
+            processData: false,   // evita que $.ajax intente serializar el FormData
+            contentType: false,   // deja que el navegador arme el multipart/form-data
             headers: { 'RequestVerificationToken': token },
             dataType: 'json',
             success: function (resultado) {
                 mostrarAlerta('success', resultado.mensaje);
-                document.getElementById('btnCerrarModalCrear').click();
+                document.getElementById('btnCerrarModalCrearInmueble').click();
                 setTimeout(function () { window.location.reload(); }, 700);
             },
             error: function (xhr) {

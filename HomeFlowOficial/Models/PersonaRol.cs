@@ -1,4 +1,6 @@
-﻿namespace HomeFlowOficial.Models
+﻿using HomeFlowOficial.Models.Enums;
+
+namespace HomeFlowOficial.Models
 {
     public class PersonaRol
     {

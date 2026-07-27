@@ -25,9 +25,9 @@ namespace HomeFlowOficial.Data
         public DbSet<TipoInmueble> TiposInmueble => Set<TipoInmueble>();
         public DbSet<TipoCercania> TiposCercania => Set<TipoCercania>();
 
-        public DbSet<EstadoInmueble> EstadosInmueble => Set<EstadoInmueble>();
-
-        public DbSet<TipoOperacion> TiposOperacion => Set<TipoOperacion>();
+        // EstadoInmueble y TipoOperacion son enum (Models/Enums), no catálogos en BD:
+        // se guardan como columna int directamente en Inmueble (ver Inmueble.Estado / Inmueble.TipoOperacion).
+        // Un DbSet<T> exige que T sea class, por eso no pueden declararse acá.
 
         //public DbSet<CategoriaInmueble> CategoriasInmueble => Set<CategoriaInmueble>();
 
