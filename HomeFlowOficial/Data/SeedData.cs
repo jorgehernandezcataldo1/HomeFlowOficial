@@ -4,6 +4,7 @@ using HomeFlowOficial.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.PortableExecutable;
+using HomeFlowOficial.Models;
 
 namespace HomeFlowOficial.Data
 {

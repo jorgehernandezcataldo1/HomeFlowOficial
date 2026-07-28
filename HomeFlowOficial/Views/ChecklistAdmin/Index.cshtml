@@ -1,0 +1,99 @@
+﻿@model IEnumerable<HomeFlowOficial.Models.ViewModels.Checklist.ChecklistPlantillaAdminListItemViewModel>
+@using HomeFlowOficial.Models.Enums
+@{
+    ViewData["Title"] = "Mantenedor de Checklists";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Mantenedor de Checklists</h2>
+    <div>
+        @foreach (var tipo in Enum.GetValues<TipoEntidadChecklist>())
+        {
+            <button type="button" class="btn btn-primary btn-sm ms-1 btn-nuevo-checklist"
+                    data-tipo-entidad="@((int)tipo)" data-nombre-tipo="@tipo">
+                + Checklist @tipo
+            </button>
+        }
+    </div>
+</div>
+
+<div id="alertaContenedor"></div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Versión</th>
+                <th>Ítems</th>
+                <th>Respuestas</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.TipoEntidad</td>
+                    <td>@p.Nombre</td>
+                    <td>v@(p.Version)</td>
+                    <td>@p.CantidadItems</td>
+                    <td>@p.CantidadRespuestasHistoricas</td>
+                    <td>
+                        @if (p.Activo)
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bg-secondary">Archivado</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        @if (p.Activo)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-editar-checklist" data-id="@p.Id">Editar (nueva versión)</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-archivar-checklist" data-id="@p.Id">Archivar</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="modalChecklistAdmin" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="formChecklistAdmin" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="checklistAdminPlantillaBaseId" />
+                <input type="hidden" id="checklistAdminTipoEntidad" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalChecklistAdminLabel">Checklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la plantilla</label>
+                        <input type="text" class="form-control" id="checklistAdminNombre" required />
+                    </div>
+                    <div id="checklistAdminItemsContenedor"></div>
+                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="btnAgregarItemChecklist">+ Agregar ítem</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/checklist-admin.js" asp-append-version="true"></script>
+}

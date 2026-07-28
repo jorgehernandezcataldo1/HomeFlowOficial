@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using HomeFlowOficial.Models;
 
 namespace HomeFlowOficial.Data.Configurations
 {

@@ -141,6 +141,7 @@ namespace HomeFlowOficial.Controllers
         {
             var propietarios = await _context.Propietarios
                 .AsNoTracking()
+                ////.Where(p => p.chec)
                 .Select(p => new
                 {
                     p.Id,
