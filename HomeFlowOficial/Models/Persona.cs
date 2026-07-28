@@ -43,5 +43,7 @@ namespace HomeFlowOficial.Models
 
         public Propietario? Propietario { get; set; }
         public Arrendatario? Arrendatario { get; set; }
+        public int EmpresaId { get; set; }
+        public Empresa Empresa { get; set; } = null!;
     }
 }

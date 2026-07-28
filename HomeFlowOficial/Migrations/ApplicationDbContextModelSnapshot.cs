@@ -258,6 +258,35 @@ namespace HomeFlowOficial.Migrations
                     b.ToTable("ChecklistRespuestaItems");
                 });
 
+            modelBuilder.Entity("HomeFlowOficial.Models.Empresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RazonSocial")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Rut")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Empresas");
+                });
+
             modelBuilder.Entity("HomeFlowOficial.Models.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -515,6 +544,9 @@ namespace HomeFlowOficial.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EstadoCivilId")
                         .HasColumnType("int");
 
@@ -542,6 +574,8 @@ namespace HomeFlowOficial.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Correo");
+
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("EstadoCivilId");
 
@@ -830,11 +864,19 @@ namespace HomeFlowOficial.Migrations
 
             modelBuilder.Entity("HomeFlowOficial.Models.Persona", b =>
                 {
+                    b.HasOne("HomeFlowOficial.Models.Empresa", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HomeFlowOficial.Models.Catalogos.EstadoCivil", "EstadoCivil")
                         .WithMany()
                         .HasForeignKey("EstadoCivilId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Empresa");
 
                     b.Navigation("EstadoCivil");
                 });

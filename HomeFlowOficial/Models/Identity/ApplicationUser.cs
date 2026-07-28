@@ -7,7 +7,8 @@ namespace HomeFlowOficial.Models.Identity
     {
         [PersonalData]
         public string NombreCompleto { get; set; } = string.Empty;
-
+        public int EmpresaId { get; set; }
+        public Empresa Empresa { get; set; } = null!;
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public bool Activo { get; set; } = true;
     }

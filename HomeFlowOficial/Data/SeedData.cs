@@ -57,6 +57,19 @@ namespace HomeFlowOficial.Data
                     new TipoCercania { Nombre = "Locomoción colectiva" });
             }
 
+            if (!await context.Empresas.AnyAsync())
+            {
+                context.Empresas.Add(new Empresa
+                {
+                    RazonSocial = "HomeFlow",
+                    Rut = "76.000.000-0",
+                    Correo = "contacto@homeflow.cl",
+                    Activa = true
+                });
+
+                await context.SaveChangesAsync();
+            }
+
             // EstadoInmueble y TipoOperacion son enum: sus valores viven en el código
             // (Models/Enums), no se siembran filas para ellos.
 
