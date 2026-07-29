@@ -51,15 +51,15 @@ namespace HomeFlowOficial.Data.Configurations
                 .HasForeignKey(x => x.EstadoCivilId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.Propietario)
-                .WithOne(x => x.Persona)
-                .HasForeignKey<Propietario>(x => x.PersonaId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(x => x.Propietario)
+            //    .WithOne(x => x.Persona)
+            //    .HasForeignKey<Propietario>(x => x.PersonaId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(x => x.Arrendatario)
-                .WithOne(x => x.Persona)
-                .HasForeignKey<Arrendatario>(x => x.PersonaId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasOne(x => x.Arrendatario)
+            //    .WithOne(x => x.Persona)
+            //    .HasForeignKey<Arrendatario>(x => x.PersonaId)
+            //    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

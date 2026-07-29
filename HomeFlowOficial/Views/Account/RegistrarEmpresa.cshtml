@@ -1,0 +1,67 @@
+﻿@model HomeFlowOficial.Models.ViewModels.EmpresaRegistroViewModel
+@{
+    ViewData["Title"] = "Registrar empresa";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4">Registra tu inmobiliaria</h3>
+
+                <form asp-action="RegistrarEmpresa" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <h6 class="text-muted">Datos de la empresa</h6>
+                    <div class="mb-3">
+                        <label asp-for="RazonSocial" class="form-label"></label>
+                        <input asp-for="RazonSocial" class="form-control" />
+                        <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Rut" class="form-label"></label>
+                        <input asp-for="Rut" class="form-control" placeholder="76.123.456-7" />
+                        <span asp-validation-for="Rut" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Correo" class="form-label"></label>
+                        <input asp-for="Correo" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Telefono" class="form-label"></label>
+                        <input asp-for="Telefono" class="form-control" />
+                    </div>
+
+                    <hr />
+                    <h6 class="text-muted">Tu cuenta de administrador</h6>
+                    <div class="mb-3">
+                        <label asp-for="NombreCompletoAdmin" class="form-label"></label>
+                        <input asp-for="NombreCompletoAdmin" class="form-control" />
+                        <span asp-validation-for="NombreCompletoAdmin" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CorreoAdmin" class="form-label"></label>
+                        <input asp-for="CorreoAdmin" class="form-control" autocomplete="username" />
+                        <span asp-validation-for="CorreoAdmin" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmarPassword" class="form-label"></label>
+                        <input asp-for="ConfirmarPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmarPassword" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Crear empresa y comenzar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

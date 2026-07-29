@@ -49,12 +49,14 @@ namespace HomeFlowOficial.Controllers
         // GET: /Propietarios/Detalle/5
         public async Task<IActionResult> Detalle(int id)
         {
+            var corredorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var propietario = await _context.Propietarios
                 .AsNoTracking()
                 .Include(p => p.Persona)
                     .ThenInclude(persona => persona.EstadoCivil)
                 .Include(p => p.Inmuebles)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id && p.CorredorId == corredorId);
 
             if (propietario is null)
                 return NotFound();

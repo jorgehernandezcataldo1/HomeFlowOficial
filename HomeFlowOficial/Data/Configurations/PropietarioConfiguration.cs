@@ -20,6 +20,8 @@ namespace HomeFlowOficial.Data.Configurations
                 .WithMany(x => x.Propietarios)
                 .HasForeignKey(x => x.CorredorId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.CorredorId);
         }
     }
 }

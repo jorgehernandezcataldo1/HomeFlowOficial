@@ -23,6 +23,8 @@ namespace HomeFlowOficial.Data.Configurations
 
             builder.Property(x => x.IngresoLiquido)
                 .HasPrecision(18, 2);
+
+            builder.HasIndex(x => x.CorredorId);
         }
     }
 }
