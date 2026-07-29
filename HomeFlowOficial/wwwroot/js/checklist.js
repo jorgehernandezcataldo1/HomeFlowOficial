@@ -77,9 +77,9 @@ $(function () {
         if (items.length === 0) return;
 
         const payload = {
-            ChecklistPlantillaId: $('#checklistPlantillaId').val(),
-            TipoEntidad: $('#checklistTipoEntidad').val(),
-            EntidadId: $('#checklistEntidadId').val(),
+            ChecklistPlantillaId: parseInt($('#checklistPlantillaId').val(), 10),
+            TipoEntidad: parseInt($('#checklistTipoEntidad').val(), 10),
+            EntidadId: parseInt($('#checklistEntidadId').val(), 10),
             Items: items
         };
 
