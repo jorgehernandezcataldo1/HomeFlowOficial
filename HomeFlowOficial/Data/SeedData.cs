@@ -1,10 +1,10 @@
+using HomeFlowOficial.Models;
 using HomeFlowOficial.Models.Catalogos;
 using HomeFlowOficial.Models.Enums;
 using HomeFlowOficial.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.PortableExecutable;
-using HomeFlowOficial.Models;
 
 namespace HomeFlowOficial.Data
 {
@@ -58,19 +58,6 @@ namespace HomeFlowOficial.Data
                     new TipoCercania { Nombre = "Locomoción colectiva" });
             }
 
-            if (!await context.Empresas.AnyAsync())
-            {
-                context.Empresas.Add(new Empresa
-                {
-                    RazonSocial = "HomeFlow",
-                    Rut = "76.000.000-0",
-                    Correo = "contacto@homeflow.cl",
-                    Activa = true
-                });
-
-                await context.SaveChangesAsync();
-            }
-
             // EstadoInmueble y TipoOperacion son enum: sus valores viven en el código
             // (Models/Enums), no se siembran filas para ellos.
 
@@ -101,6 +88,28 @@ namespace HomeFlowOficial.Data
                 });
             }
 
+            // Crear empresa inicial
+            Empresa empresa;
+
+            if (!await context.Empresas.AnyAsync())
+            {
+                empresa = new Empresa
+                {
+                    RazonSocial = "HomeFlow Propiedades",
+                    Rut = "76.123.456-7",
+                    Correo = "contacto@homeflow.cl",
+                    Telefono = "+56912345678",
+                    Activa = true
+                };
+
+                context.Empresas.Add(empresa);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                empresa = await context.Empresas.FirstAsync();
+            }
+
             if (!await context.ChecklistPlantillas.AnyAsync(p => p.TipoEntidad == TipoEntidadChecklist.Inmueble))
             {
                 context.ChecklistPlantillas.Add(new HomeFlowOficial.Models.Checklist.ChecklistPlantilla
@@ -120,6 +129,7 @@ namespace HomeFlowOficial.Data
             await context.SaveChangesAsync();
 
             var userManager = servicios.GetRequiredService<UserManager<ApplicationUser>>();
+
             if (await userManager.FindByEmailAsync("admin@homeflow.cl") is null)
             {
                 var admin = new ApplicationUser
@@ -127,10 +137,12 @@ namespace HomeFlowOficial.Data
                     UserName = "admin@homeflow.cl",
                     Email = "admin@homeflow.cl",
                     NombreCompleto = "Administrador",
+                    EmpresaId = empresa.Id,
                     EmailConfirmed = true
                 };
 
                 var resultado = await userManager.CreateAsync(admin, "CambiarClave123!");
+
                 if (resultado.Succeeded)
                     await userManager.AddToRoleAsync(admin, "Admin");
             }
