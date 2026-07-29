@@ -12,15 +12,15 @@ namespace HomeFlowOficial.Models
 
         public Persona Persona { get; set; } = null!;
 
-        public string? Observaciones { get; set; }
+        public string CorredorId { get; set; } = string.Empty;
 
-        public DateTime FechaIngreso { get; set; } = DateTime.UtcNow;
+        public ApplicationUser Corredor { get; set; } = null!;
 
         public bool ChecklistAprobado { get; set; }
 
-        public string? UsuarioIngresoId { get; set; }
+        public string? Observaciones { get; set; }
 
-        public ApplicationUser? UsuarioIngreso { get; set; }
+        public DateTime FechaIngreso { get; set; } = DateTime.UtcNow;
 
         public ICollection<Inmueble> Inmuebles { get; set; } = new List<Inmueble>();
     }

@@ -8,16 +8,26 @@ namespace HomeFlowOficial.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Empresa> builder)
         {
+            builder.ToTable("Empresas");
+
             builder.HasKey(x => x.Id);
 
             builder.HasIndex(x => x.Rut)
-                   .IsUnique();
+                .IsUnique();
 
             builder.Property(x => x.RazonSocial)
-                   .HasMaxLength(150);
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(x => x.Rut)
-                   .HasMaxLength(12);
+                .HasMaxLength(12)
+                .IsRequired();
+
+            builder.Property(x => x.Correo)
+                .HasMaxLength(150);
+
+            builder.Property(x => x.Telefono)
+                .HasMaxLength(20);
         }
     }
 }

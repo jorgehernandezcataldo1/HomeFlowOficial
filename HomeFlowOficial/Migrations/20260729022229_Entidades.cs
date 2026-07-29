@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HomeFlowOficial.Migrations
 {
     /// <inheritdoc />
-    public partial class InicialCompleto : Migration
+    public partial class Entidades : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,34 +23,6 @@ namespace HomeFlowOficial.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Activo = table.Column<bool>(type: "bit", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,6 +49,8 @@ namespace HomeFlowOficial.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RazonSocial = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Rut = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
+                    Correo = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    Telefono = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Activa = table.Column<bool>(type: "bit", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -145,6 +119,144 @@ namespace HomeFlowOficial.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChecklistItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChecklistPlantillaId = table.Column<int>(type: "int", nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Orden = table.Column<int>(type: "int", nullable: false),
+                    Obligatorio = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChecklistItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChecklistItems_ChecklistPlantillas_ChecklistPlantillaId",
+                        column: x => x.ChecklistPlantillaId,
+                        principalTable: "ChecklistPlantillas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChecklistRespuestas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChecklistPlantillaId = table.Column<int>(type: "int", nullable: false),
+                    EntidadId = table.Column<int>(type: "int", nullable: false),
+                    TipoEntidad = table.Column<int>(type: "int", nullable: false),
+                    CorredorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FechaRealizacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Aprobado = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChecklistRespuestas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChecklistRespuestas_ChecklistPlantillas_ChecklistPlantillaId",
+                        column: x => x.ChecklistPlantillaId,
+                        principalTable: "ChecklistPlantillas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmpresaId = table.Column<int>(type: "int", nullable: false),
+                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Empresas_EmpresaId",
+                        column: x => x.EmpresaId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Personas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rut = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
+                    Nombres = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Correo = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Telefono = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Direccion = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    EstadoCivilId = table.Column<int>(type: "int", nullable: false),
+                    FotoCarnetUrl = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    Activo = table.Column<bool>(type: "bit", nullable: false),
+                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Personas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Personas_EstadosCiviles_EstadoCivilId",
+                        column: x => x.EstadoCivilId,
+                        principalTable: "EstadosCiviles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChecklistRespuestaItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChecklistRespuestaId = table.Column<int>(type: "int", nullable: false),
+                    ChecklistItemId = table.Column<int>(type: "int", nullable: false),
+                    Cumple = table.Column<bool>(type: "bit", nullable: false),
+                    Observacion = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChecklistRespuestaItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChecklistRespuestaItems_ChecklistItems_ChecklistItemId",
+                        column: x => x.ChecklistItemId,
+                        principalTable: "ChecklistItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChecklistRespuestaItems_ChecklistRespuestas_ChecklistRespuestaId",
+                        column: x => x.ChecklistRespuestaId,
+                        principalTable: "ChecklistRespuestas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -235,135 +347,32 @@ namespace HomeFlowOficial.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChecklistItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ChecklistPlantillaId = table.Column<int>(type: "int", nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    Orden = table.Column<int>(type: "int", nullable: false),
-                    Obligatorio = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChecklistItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ChecklistItems_ChecklistPlantillas_ChecklistPlantillaId",
-                        column: x => x.ChecklistPlantillaId,
-                        principalTable: "ChecklistPlantillas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ChecklistRespuestas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ChecklistPlantillaId = table.Column<int>(type: "int", nullable: false),
-                    EntidadId = table.Column<int>(type: "int", nullable: false),
-                    TipoEntidad = table.Column<int>(type: "int", nullable: false),
-                    CorredorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FechaRealizacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Aprobado = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChecklistRespuestas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ChecklistRespuestas_ChecklistPlantillas_ChecklistPlantillaId",
-                        column: x => x.ChecklistPlantillaId,
-                        principalTable: "ChecklistPlantillas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Personas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Rut = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
-                    Nombres = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ApellidoPaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ApellidoMaterno = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Correo = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Telefono = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Direccion = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    EstadoCivilId = table.Column<int>(type: "int", nullable: false),
-                    FotoCarnetUrl = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
-                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Activo = table.Column<bool>(type: "bit", nullable: false),
-                    EmpresaId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Personas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Personas_Empresas_EmpresaId",
-                        column: x => x.EmpresaId,
-                        principalTable: "Empresas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Personas_EstadosCiviles_EstadoCivilId",
-                        column: x => x.EstadoCivilId,
-                        principalTable: "EstadosCiviles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ChecklistRespuestaItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ChecklistRespuestaId = table.Column<int>(type: "int", nullable: false),
-                    ChecklistItemId = table.Column<int>(type: "int", nullable: false),
-                    Cumple = table.Column<bool>(type: "bit", nullable: false),
-                    Observacion = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChecklistRespuestaItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ChecklistRespuestaItems_ChecklistItems_ChecklistItemId",
-                        column: x => x.ChecklistItemId,
-                        principalTable: "ChecklistItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ChecklistRespuestaItems_ChecklistRespuestas_ChecklistRespuestaId",
-                        column: x => x.ChecklistRespuestaId,
-                        principalTable: "ChecklistRespuestas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Arrendatarios",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonaId = table.Column<int>(type: "int", nullable: false),
+                    CorredorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TipoContratoLaboral = table.Column<int>(type: "int", nullable: false),
-                    IngresoLiquido = table.Column<decimal>(type: "decimal(12,2)", nullable: true),
+                    IngresoLiquido = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     AntiguedadLaboralMeses = table.Column<int>(type: "int", nullable: true),
                     TieneHijos = table.Column<bool>(type: "bit", nullable: false),
                     NumeroHijos = table.Column<int>(type: "int", nullable: false),
                     TieneMascota = table.Column<bool>(type: "bit", nullable: false),
-                    DetalleMascota = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    DetalleMascota = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ChecklistAprobado = table.Column<bool>(type: "bit", nullable: false),
                     FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Arrendatarios", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Arrendatarios_AspNetUsers_CorredorId",
+                        column: x => x.CorredorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Arrendatarios_Personas_PersonaId",
                         column: x => x.PersonaId,
@@ -399,19 +408,20 @@ namespace HomeFlowOficial.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonaId = table.Column<int>(type: "int", nullable: false),
-                    Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CorredorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ChecklistAprobado = table.Column<bool>(type: "bit", nullable: false),
-                    UsuarioIngresoId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Propietarios", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Propietarios_AspNetUsers_UsuarioIngresoId",
-                        column: x => x.UsuarioIngresoId,
+                        name: "FK_Propietarios_AspNetUsers_CorredorId",
+                        column: x => x.CorredorId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Propietarios_Personas_PersonaId",
                         column: x => x.PersonaId,
@@ -504,6 +514,11 @@ namespace HomeFlowOficial.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Arrendatarios_CorredorId",
+                table: "Arrendatarios",
+                column: "CorredorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Arrendatarios_PersonaId",
                 table: "Arrendatarios",
                 column: "PersonaId",
@@ -542,6 +557,11 @@ namespace HomeFlowOficial.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_EmpresaId",
+                table: "AspNetUsers",
+                column: "EmpresaId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -572,6 +592,12 @@ namespace HomeFlowOficial.Migrations
                 name: "IX_ChecklistRespuestas_TipoEntidad_EntidadId",
                 table: "ChecklistRespuestas",
                 columns: new[] { "TipoEntidad", "EntidadId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Empresas_Rut",
+                table: "Empresas",
+                column: "Rut",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_InmuebleCercanias_InmuebleId",
@@ -609,11 +635,6 @@ namespace HomeFlowOficial.Migrations
                 column: "Correo");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Personas_EmpresaId",
-                table: "Personas",
-                column: "EmpresaId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Personas_EstadoCivilId",
                 table: "Personas",
                 column: "EstadoCivilId");
@@ -625,15 +646,15 @@ namespace HomeFlowOficial.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Propietarios_CorredorId",
+                table: "Propietarios",
+                column: "CorredorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Propietarios_PersonaId",
                 table: "Propietarios",
                 column: "PersonaId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Propietarios_UsuarioIngresoId",
-                table: "Propietarios",
-                column: "UsuarioIngresoId");
         }
 
         /// <inheritdoc />

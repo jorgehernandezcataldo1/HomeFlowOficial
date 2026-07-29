@@ -8,14 +8,21 @@ namespace HomeFlowOficial.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Arrendatario> builder)
         {
-            builder.Property(a => a.IngresoLiquido).HasColumnType("decimal(12,2)");
+            builder.ToTable("Arrendatarios");
 
-            builder.HasOne(a => a.Persona)
-                   .WithOne(pe => pe.Arrendatario)
-                   .HasForeignKey<Arrendatario>(a => a.PersonaId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasKey(x => x.Id);
 
-            builder.HasIndex(a => a.PersonaId).IsUnique();
+            builder.HasOne(x => x.Persona)
+                .WithOne(x => x.Arrendatario)
+                .HasForeignKey<Arrendatario>(x => x.PersonaId);
+
+            builder.HasOne(x => x.Corredor)
+                .WithMany(x => x.Arrendatarios)
+                .HasForeignKey(x => x.CorredorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.IngresoLiquido)
+                .HasPrecision(18, 2);
         }
     }
 }

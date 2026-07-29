@@ -8,12 +8,18 @@ namespace HomeFlowOficial.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Propietario> builder)
         {
-            builder.HasOne(p => p.Persona)
-                   .WithOne(pe => pe.Propietario)
-                   .HasForeignKey<Propietario>(p => p.PersonaId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.ToTable("Propietarios");
 
-            builder.HasIndex(p => p.PersonaId).IsUnique();
+            builder.HasKey(x => x.Id);
+
+            builder.HasOne(x => x.Persona)
+                .WithOne(x => x.Propietario)
+                .HasForeignKey<Propietario>(x => x.PersonaId);
+
+            builder.HasOne(x => x.Corredor)
+                .WithMany(x => x.Propietarios)
+                .HasForeignKey(x => x.CorredorId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

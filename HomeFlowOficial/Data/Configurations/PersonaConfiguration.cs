@@ -22,22 +22,29 @@ namespace HomeFlowOficial.Data.Configurations
             builder.HasIndex(x => x.Correo);
 
             builder.Property(x => x.Nombres)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder.Property(x => x.ApellidoPaterno)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder.Property(x => x.ApellidoMaterno)
                 .HasMaxLength(100);
 
             builder.Property(x => x.Correo)
-                .HasMaxLength(150);
+                .HasMaxLength(150)
+                .IsRequired();
 
             builder.Property(x => x.Telefono)
                 .HasMaxLength(20);
 
             builder.Property(x => x.Direccion)
-                .HasMaxLength(250);
+                .HasMaxLength(250)
+                .IsRequired();
+
+            builder.Property(x => x.FotoCarnetUrl)
+                .HasMaxLength(300);
 
             builder.HasOne(x => x.EstadoCivil)
                 .WithMany()
@@ -46,16 +53,13 @@ namespace HomeFlowOficial.Data.Configurations
 
             builder.HasOne(x => x.Propietario)
                 .WithOne(x => x.Persona)
-                .HasForeignKey<Propietario>(x => x.PersonaId);
+                .HasForeignKey<Propietario>(x => x.PersonaId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Arrendatario)
                 .WithOne(x => x.Persona)
-                .HasForeignKey<Arrendatario>(x => x.PersonaId);
-
-            builder.HasOne(x => x.Empresa)
-                .WithMany(x => x.Personas)
-                .HasForeignKey(x => x.EmpresaId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey<Arrendatario>(x => x.PersonaId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

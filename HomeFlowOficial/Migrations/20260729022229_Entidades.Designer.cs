@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeFlowOficial.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260728151811_Nuevo")]
-    partial class Nuevo
+    [Migration("20260729022229_Entidades")]
+    partial class Entidades
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,15 +39,19 @@ namespace HomeFlowOficial.Migrations
                     b.Property<bool>("ChecklistAprobado")
                         .HasColumnType("bit");
 
+                    b.Property<string>("CorredorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("DetalleMascota")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("FechaIngreso")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("IngresoLiquido")
-                        .HasColumnType("decimal(12,2)");
+                    b.Property<decimal>("IngresoLiquido")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("NumeroHijos")
                         .HasColumnType("int");
@@ -66,10 +70,12 @@ namespace HomeFlowOficial.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CorredorId");
+
                     b.HasIndex("PersonaId")
                         .IsUnique();
 
-                    b.ToTable("Arrendatarios");
+                    b.ToTable("Arrendatarios", (string)null);
                 });
 
             modelBuilder.Entity("HomeFlowOficial.Models.Catalogos.EstadoCivil", b =>
@@ -298,7 +304,7 @@ namespace HomeFlowOficial.Migrations
                     b.HasIndex("Rut")
                         .IsUnique();
 
-                    b.ToTable("Empresas");
+                    b.ToTable("Empresas", (string)null);
                 });
 
             modelBuilder.Entity("HomeFlowOficial.Models.Identity.ApplicationUser", b =>
@@ -418,9 +424,6 @@ namespace HomeFlowOficial.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Equipado")
                         .HasColumnType("bit");
 
@@ -496,8 +499,6 @@ namespace HomeFlowOficial.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmpresaId");
-
                     b.HasIndex("PropietarioId");
 
                     b.HasIndex("TipoInmuebleId");
@@ -568,9 +569,6 @@ namespace HomeFlowOficial.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<int>("EmpresaId")
-                        .HasColumnType("int");
-
                     b.Property<int>("EstadoCivilId")
                         .HasColumnType("int");
 
@@ -598,8 +596,6 @@ namespace HomeFlowOficial.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Correo");
-
-                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("EstadoCivilId");
 
@@ -641,6 +637,10 @@ namespace HomeFlowOficial.Migrations
                     b.Property<bool>("ChecklistAprobado")
                         .HasColumnType("bit");
 
+                    b.Property<string>("CorredorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("FechaIngreso")
                         .HasColumnType("datetime2");
 
@@ -650,17 +650,14 @@ namespace HomeFlowOficial.Migrations
                     b.Property<int>("PersonaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsuarioIngresoId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CorredorId");
 
                     b.HasIndex("PersonaId")
                         .IsUnique();
 
-                    b.HasIndex("UsuarioIngresoId");
-
-                    b.ToTable("Propietarios");
+                    b.ToTable("Propietarios", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -798,11 +795,19 @@ namespace HomeFlowOficial.Migrations
 
             modelBuilder.Entity("HomeFlowOficial.Models.Arrendatario", b =>
                 {
+                    b.HasOne("HomeFlowOficial.Models.Identity.ApplicationUser", "Corredor")
+                        .WithMany("Arrendatarios")
+                        .HasForeignKey("CorredorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HomeFlowOficial.Models.Persona", "Persona")
                         .WithOne("Arrendatario")
                         .HasForeignKey("HomeFlowOficial.Models.Arrendatario", "PersonaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Corredor");
 
                     b.Navigation("Persona");
                 });
@@ -851,9 +856,9 @@ namespace HomeFlowOficial.Migrations
             modelBuilder.Entity("HomeFlowOficial.Models.Identity.ApplicationUser", b =>
                 {
                     b.HasOne("HomeFlowOficial.Models.Empresa", "Empresa")
-                        .WithMany()
+                        .WithMany("Usuarios")
                         .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Empresa");
@@ -861,12 +866,6 @@ namespace HomeFlowOficial.Migrations
 
             modelBuilder.Entity("HomeFlowOficial.Models.Inmueble", b =>
                 {
-                    b.HasOne("HomeFlowOficial.Models.Empresa", "Empresa")
-                        .WithMany("Inmuebles")
-                        .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HomeFlowOficial.Models.Propietario", "Propietario")
                         .WithMany("Inmuebles")
                         .HasForeignKey("PropietarioId")
@@ -878,8 +877,6 @@ namespace HomeFlowOficial.Migrations
                         .HasForeignKey("TipoInmuebleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Empresa");
 
                     b.Navigation("Propietario");
 
@@ -907,19 +904,11 @@ namespace HomeFlowOficial.Migrations
 
             modelBuilder.Entity("HomeFlowOficial.Models.Persona", b =>
                 {
-                    b.HasOne("HomeFlowOficial.Models.Empresa", "Empresa")
-                        .WithMany("Personas")
-                        .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("HomeFlowOficial.Models.Catalogos.EstadoCivil", "EstadoCivil")
                         .WithMany()
                         .HasForeignKey("EstadoCivilId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Empresa");
 
                     b.Navigation("EstadoCivil");
                 });
@@ -927,7 +916,7 @@ namespace HomeFlowOficial.Migrations
             modelBuilder.Entity("HomeFlowOficial.Models.PersonaRol", b =>
                 {
                     b.HasOne("HomeFlowOficial.Models.Persona", "Persona")
-                        .WithMany()
+                        .WithMany("Roles")
                         .HasForeignKey("PersonaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -937,19 +926,21 @@ namespace HomeFlowOficial.Migrations
 
             modelBuilder.Entity("HomeFlowOficial.Models.Propietario", b =>
                 {
+                    b.HasOne("HomeFlowOficial.Models.Identity.ApplicationUser", "Corredor")
+                        .WithMany("Propietarios")
+                        .HasForeignKey("CorredorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HomeFlowOficial.Models.Persona", "Persona")
                         .WithOne("Propietario")
                         .HasForeignKey("HomeFlowOficial.Models.Propietario", "PersonaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HomeFlowOficial.Models.Identity.ApplicationUser", "UsuarioIngreso")
-                        .WithMany()
-                        .HasForeignKey("UsuarioIngresoId");
+                    b.Navigation("Corredor");
 
                     b.Navigation("Persona");
-
-                    b.Navigation("UsuarioIngreso");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1015,9 +1006,14 @@ namespace HomeFlowOficial.Migrations
 
             modelBuilder.Entity("HomeFlowOficial.Models.Empresa", b =>
                 {
-                    b.Navigation("Inmuebles");
+                    b.Navigation("Usuarios");
+                });
 
-                    b.Navigation("Personas");
+            modelBuilder.Entity("HomeFlowOficial.Models.Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("Arrendatarios");
+
+                    b.Navigation("Propietarios");
                 });
 
             modelBuilder.Entity("HomeFlowOficial.Models.Inmueble", b =>
@@ -1030,6 +1026,8 @@ namespace HomeFlowOficial.Migrations
                     b.Navigation("Arrendatario");
 
                     b.Navigation("Propietario");
+
+                    b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("HomeFlowOficial.Models.Propietario", b =>

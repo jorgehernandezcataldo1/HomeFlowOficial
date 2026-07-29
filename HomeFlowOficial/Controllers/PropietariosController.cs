@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HomeFlowOficial.Controllers
 {
@@ -21,9 +22,11 @@ namespace HomeFlowOficial.Controllers
         // GET: /Propietarios
         public async Task<IActionResult> Index()
         {
+            var corredorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var propietarios = await _context.Propietarios
                 .AsNoTracking()
-                .OrderByDescending(p => p.FechaIngreso)
+                .Where(x => x.CorredorId == corredorId)
                 .Select(p => new PropietarioListItemViewModel
                 {
                     Id = p.Id,
@@ -67,11 +70,26 @@ namespace HomeFlowOficial.Controllers
         public async Task<IActionResult> Crear(PropietarioViewModel modelo)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new { exito = false, errores = ObtenerErroresDeModelState() });
+                return BadRequest(new
+                {
+                    exito = false,
+                    errores = ObtenerErroresDeModelState()
+                });
 
-            var rutNormalizado = modelo.Rut.Replace(".", "").Replace("-", "").Trim().ToUpperInvariant();
+            var corredorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var yaExiste = await _context.Personas.AnyAsync(p => p.Rut == rutNormalizado);
+            if (string.IsNullOrWhiteSpace(corredorId))
+                return Unauthorized();
+
+            var rutNormalizado = modelo.Rut
+                .Replace(".", "")
+                .Replace("-", "")
+                .Trim()
+                .ToUpperInvariant();
+
+            var yaExiste = await _context.Personas
+                .AnyAsync(p => p.Rut == rutNormalizado);
+
             if (yaExiste)
             {
                 return BadRequest(new
@@ -79,11 +97,15 @@ namespace HomeFlowOficial.Controllers
                     exito = false,
                     errores = new Dictionary<string, string[]>
                     {
-                        [nameof(modelo.Rut)] = new[] { "Ya existe una persona registrada con este RUT." }
+                        [nameof(modelo.Rut)] = new[]
+                        {
+                    "Ya existe una persona registrada con este RUT."
+                }
                     }
                 });
             }
 
+            // Crear Persona
             var persona = new Persona
             {
                 Rut = rutNormalizado,
@@ -96,14 +118,25 @@ namespace HomeFlowOficial.Controllers
                 EstadoCivilId = modelo.EstadoCivilId
             };
 
-            var propietario = new Propietario { Persona = persona };
+            // Crear Propietario
+            var propietario = new Propietario
+            {
+                Persona = persona,
+                CorredorId = corredorId,
+                FechaIngreso = DateTime.UtcNow,
+                ChecklistAprobado = false
+            };
 
-            // EF Core parametriza automáticamente esta inserción (sin concatenar SQL a mano),
-            // lo que evita inyección SQL por diseño.
             _context.Propietarios.Add(propietario);
+
             await _context.SaveChangesAsync();
 
-            return Json(new { exito = true, mensaje = "Propietario registrado correctamente.", id = propietario.Id });
+            return Json(new
+            {
+                exito = true,
+                mensaje = "Propietario registrado correctamente.",
+                id = propietario.Id
+            });
         }
 
         private Dictionary<string, string[]> ObtenerErroresDeModelState()
