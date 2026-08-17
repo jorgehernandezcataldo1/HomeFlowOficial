@@ -72,55 +72,59 @@ namespace HomeFlowOficial.Controllers
         public async Task<IActionResult> Crear(PropietarioViewModel modelo)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new
-                {
-                    exito = false,
-                    errores = ObtenerErroresDeModelState()
-                });
+                return BadRequest(new { exito = false, errores = ObtenerErroresDeModelState() });
 
             var corredorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (string.IsNullOrWhiteSpace(corredorId))
                 return Unauthorized();
 
-            var rutNormalizado = modelo.Rut
-                .Replace(".", "")
-                .Replace("-", "")
-                .Trim()
-                .ToUpperInvariant();
+            var rutNormalizado = modelo.Rut.Replace(".", "").Replace("-", "").Trim().ToUpperInvariant();
 
-            var yaExiste = await _context.Personas
-                .AnyAsync(p => p.Rut == rutNormalizado);
+            // La Persona es única globalmente por RUT, pero puede tener varias
+            // relaciones de Propietario (una por corredor que la gestiona).
+            var persona = await _context.Personas.FirstOrDefaultAsync(p => p.Rut == rutNormalizado);
 
-            if (yaExiste)
+            if (persona is not null)
             {
-                return BadRequest(new
+                var yaEsSuPropietario = await _context.Propietarios
+                    .AnyAsync(x => x.PersonaId == persona.Id && x.CorredorId == corredorId);
+
+                if (yaEsSuPropietario)
                 {
-                    exito = false,
-                    errores = new Dictionary<string, string[]>
+                    return BadRequest(new
                     {
-                        [nameof(modelo.Rut)] = new[]
+                        exito = false,
+                        errores = new Dictionary<string, string[]>
                         {
-                    "Ya existe una persona registrada con este RUT."
+                            [nameof(modelo.Rut)] = new[] { "Ya tienes a esta persona registrada como propietario." }
+                        }
+                    });
                 }
-                    }
-                });
+
+                // Refresca datos de contacto por si vienen distintos (opcional, a tu criterio).
+                persona.Nombres = modelo.Nombres.Trim();
+                persona.ApellidoPaterno = modelo.ApellidoPaterno.Trim();
+                persona.ApellidoMaterno = modelo.ApellidoMaterno?.Trim();
+                persona.Correo = modelo.Correo.Trim();
+                persona.Telefono = modelo.Telefono;
+                persona.Direccion = modelo.Direccion.Trim();
+                persona.EstadoCivilId = modelo.EstadoCivilId;
+            }
+            else
+            {
+                persona = new Persona
+                {
+                    Rut = rutNormalizado,
+                    Nombres = modelo.Nombres.Trim(),
+                    ApellidoPaterno = modelo.ApellidoPaterno.Trim(),
+                    ApellidoMaterno = modelo.ApellidoMaterno?.Trim(),
+                    Correo = modelo.Correo.Trim(),
+                    Telefono = modelo.Telefono,
+                    Direccion = modelo.Direccion.Trim(),
+                    EstadoCivilId = modelo.EstadoCivilId
+                };
             }
 
-            // Crear Persona
-            var persona = new Persona
-            {
-                Rut = rutNormalizado,
-                Nombres = modelo.Nombres.Trim(),
-                ApellidoPaterno = modelo.ApellidoPaterno.Trim(),
-                ApellidoMaterno = modelo.ApellidoMaterno?.Trim(),
-                Correo = modelo.Correo.Trim(),
-                Telefono = modelo.Telefono,
-                Direccion = modelo.Direccion.Trim(),
-                EstadoCivilId = modelo.EstadoCivilId
-            };
-
-            // Crear Propietario
             var propietario = new Propietario
             {
                 Persona = persona,
@@ -131,14 +135,17 @@ namespace HomeFlowOficial.Controllers
 
             _context.Propietarios.Add(propietario);
 
-            await _context.SaveChangesAsync();
-
-            return Json(new
+            try
             {
-                exito = true,
-                mensaje = "Propietario registrado correctamente.",
-                id = propietario.Id
-            });
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // Carrera: dos corredores creando la misma persona nueva al mismo tiempo.
+                return BadRequest(new { exito = false, mensaje = "Ocurrió un conflicto al guardar, intenta nuevamente." });
+            }
+
+            return Json(new { exito = true, mensaje = "Propietario registrado correctamente.", id = propietario.Id });
         }
 
         private Dictionary<string, string[]> ObtenerErroresDeModelState()

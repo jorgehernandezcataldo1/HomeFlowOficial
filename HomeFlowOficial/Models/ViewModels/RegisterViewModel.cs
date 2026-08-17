@@ -1,9 +1,14 @@
+using HomeFlowOficial.Models.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace HomeFlowOficial.Models.ViewModels
 {
     public class RegisterViewModel
     {
+        // RegisterViewModel.cs
+        [Required(ErrorMessage = "El RUT es obligatorio."), Rut(ErrorMessage = "El RUT ingresado no es válido.")]
+        [Display(Name = "RUT")]
+        public string Rut { get; set; } = string.Empty;
         [Required, StringLength(150)]
         [Display(Name = "Nombre completo")]
         public string NombreCompleto { get; set; } = string.Empty;

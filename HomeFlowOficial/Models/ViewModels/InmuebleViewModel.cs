@@ -109,5 +109,8 @@ namespace HomeFlowOficial.Models.ViewModels
         [StringLength(2000)]
         [Display(Name = "Descripción")]
         public string? Descripcion { get; set; }
+
+        [Display(Name = "Tiene exclusividad")]
+        public bool TieneExclusividad { get; set; }
     }
 }

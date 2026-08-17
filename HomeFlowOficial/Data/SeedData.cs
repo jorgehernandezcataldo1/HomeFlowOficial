@@ -137,6 +137,7 @@ namespace HomeFlowOficial.Data
                     UserName = "admin@homeflow.cl",
                     Email = "admin@homeflow.cl",
                     NombreCompleto = "Administrador",
+                    Rut = "111111111", 
                     EmpresaId = empresa.Id,
                     EmailConfirmed = true
                 };

@@ -64,5 +64,6 @@ namespace HomeFlowOficial.Models
         public bool ChecklistAprobado { get; set; } = false;
 
         public ICollection<InmuebleCercania> Cercanias { get; set; } = new List<InmuebleCercania>();
+        public bool TieneExclusividad { get; set; } = false;
     }
 }

@@ -40,6 +40,11 @@
                         <span asp-validation-for="NombreCompletoAdmin" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
+                        <label asp-for="RutAdmin" class="form-label"></label>
+                        <input asp-for="RutAdmin" class="form-control" placeholder="12345678-9" />
+                        <span asp-validation-for="RutAdmin" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
                         <label asp-for="CorreoAdmin" class="form-label"></label>
                         <input asp-for="CorreoAdmin" class="form-control" autocomplete="username" />
                         <span asp-validation-for="CorreoAdmin" class="text-danger"></span>

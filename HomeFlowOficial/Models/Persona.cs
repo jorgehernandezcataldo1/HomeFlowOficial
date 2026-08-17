@@ -33,7 +33,7 @@ namespace HomeFlowOficial.Models
 
         public ICollection<PersonaRol> Roles { get; set; } = new List<PersonaRol>();
 
-        public Propietario? Propietario { get; set; }
+        public ICollection<Propietario> RelacionesPropietario { get; set; } = new List<Propietario>();
 
         public Arrendatario? Arrendatario { get; set; }
     }

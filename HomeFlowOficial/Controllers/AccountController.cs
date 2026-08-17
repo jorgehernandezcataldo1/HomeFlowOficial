@@ -82,6 +82,7 @@ namespace HomeFlowOficial.Controllers
                 return View(modelo);
 
             var rutNormalizado = modelo.Rut.Replace(".", "").Replace("-", "").Trim().ToUpperInvariant();
+            var rutAdminNormalizado = modelo.RutAdmin.Replace(".", "").Replace("-", "").Trim().ToUpperInvariant();
 
             if (await _context.Empresas.AnyAsync(e => e.Rut == rutNormalizado))
             {
@@ -109,6 +110,7 @@ namespace HomeFlowOficial.Controllers
                     UserName = modelo.CorreoAdmin.Trim(),
                     Email = modelo.CorreoAdmin.Trim(),
                     NombreCompleto = modelo.NombreCompletoAdmin.Trim(),
+                    Rut = rutAdminNormalizado,
                     EmpresaId = empresa.Id,
                     EmailConfirmed = true,
                     Activo = true
@@ -173,35 +175,55 @@ namespace HomeFlowOficial.Controllers
             if (adminActual is null)
                 return Unauthorized();
 
+            var rutNormalizado = modelo.Rut.Replace(".", "").Replace("-", "").Trim().ToUpperInvariant();
+
+            var yaExisteEnEstaEmpresa = await _context.Users
+                .AnyAsync(u => u.Rut == rutNormalizado && u.EmpresaId == adminActual.EmpresaId);
+
+            if (yaExisteEnEstaEmpresa)
+            {
+                ModelState.AddModelError(nameof(modelo.Rut), "Ya existe un usuario con este RUT en tu empresa.");
+                return View(modelo);
+            }
+
             var usuario = new ApplicationUser
             {
                 UserName = modelo.Correo,
                 Email = modelo.Correo,
                 NombreCompleto = modelo.NombreCompleto,
+                Rut = rutNormalizado,
                 EmpresaId = adminActual.EmpresaId, // heredado del admin logueado, nunca del form
                 EmailConfirmed = true,
                 Activo = true
             };
 
-            var resultado = await _userManager.CreateAsync(usuario, modelo.Password);
-            if (resultado.Succeeded)
+            try
             {
-                var resultadoRol = await _userManager.AddToRoleAsync(usuario, modelo.Rol);
-                if (!resultadoRol.Succeeded)
+                var resultado = await _userManager.CreateAsync(usuario, modelo.Password);
+                if (resultado.Succeeded)
                 {
-                    foreach (var error in resultadoRol.Errors)
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    return View(modelo);
+                    var resultadoRol = await _userManager.AddToRoleAsync(usuario, modelo.Rol);
+                    if (!resultadoRol.Succeeded)
+                    {
+                        foreach (var error in resultadoRol.Errors)
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        return View(modelo);
+                    }
+
+                    TempData["Mensaje"] = "Usuario creado correctamente.";
+                    return RedirectToAction(nameof(Register));
                 }
 
-                TempData["Mensaje"] = "Usuario creado correctamente.";
-                return RedirectToAction(nameof(Register));
+                foreach (var error in resultado.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                return View(modelo);
             }
-
-            foreach (var error in resultado.Errors)
-                ModelState.AddModelError(string.Empty, error.Description);
-
-            return View(modelo);
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(nameof(modelo.Rut), "Ya existe un usuario con este RUT en tu empresa.");
+                return View(modelo);
+            }
         }
 
         [HttpPost]

@@ -38,5 +38,9 @@ namespace HomeFlowOficial.Models.ViewModels
         [Compare(nameof(Password), ErrorMessage = "Las contraseñas no coinciden.")]
         [Display(Name = "Confirmar contraseña")]
         public string ConfirmarPassword { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Tu RUT es obligatorio."), Rut(ErrorMessage = "El RUT ingresado no es válido.")]
+        [Display(Name = "Tu RUT")]
+        public string RutAdmin { get; set; } = string.Empty;
     }
 }

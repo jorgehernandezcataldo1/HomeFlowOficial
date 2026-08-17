@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HomeFlowOficial.Controllers
 {
@@ -54,8 +55,11 @@ namespace HomeFlowOficial.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { exito = false, errores = ObtenerErroresDeModelState() });
 
-            var propietarioExiste = await _context.Propietarios.AnyAsync(p => p.Id == modelo.PropietarioId);
-            if (!propietarioExiste)
+            var propietario = await _context.Propietarios
+                .Include(p => p.Persona)
+                .FirstOrDefaultAsync(p => p.Id == modelo.PropietarioId);
+
+            if (propietario is null)
             {
                 return BadRequest(new
                 {
@@ -77,6 +81,28 @@ namespace HomeFlowOficial.Controllers
                     {
                         [nameof(modelo.TipoInmuebleId)] = new[] { "Selecciona un tipo de inmueble válido." }
                     }
+                });
+            }
+
+            // Exclusividad: misma persona (RUT) + misma dirección/comuna, en CUALQUIER
+            // corredor/empresa del sistema. Si ya existe con exclusividad, se bloquea.
+            var direccionNormalizada = modelo.Direccion.Trim().ToUpperInvariant();
+            var comunaNormalizada = modelo.Comuna.Trim().ToUpperInvariant();
+
+            var bloqueadoPorExclusividad = await _context.Inmuebles
+                .Include(i => i.Propietario).ThenInclude(p => p.Persona)
+                .AnyAsync(i =>
+                    i.Propietario.Persona.Rut == propietario.Persona.Rut &&
+                    i.Direccion.ToUpper() == direccionNormalizada &&
+                    i.Comuna.ToUpper() == comunaNormalizada &&
+                    i.TieneExclusividad);
+
+            if (bloqueadoPorExclusividad)
+            {
+                return BadRequest(new
+                {
+                    exito = false,
+                    mensaje = "Esta propiedad ya tiene un acuerdo de exclusividad vigente con otro corredor."
                 });
             }
 
@@ -108,11 +134,10 @@ namespace HomeFlowOficial.Controllers
                 Equipado = modelo.Equipado,
                 AceptaMascotas = modelo.AceptaMascotas,
                 Precio = modelo.Precio,
-                Descripcion = modelo.Descripcion?.Trim()
+                Descripcion = modelo.Descripcion?.Trim(),
+                TieneExclusividad = modelo.TieneExclusividad
             };
 
-            // EF Core parametriza automáticamente esta inserción (sin concatenar SQL a mano),
-            // lo que evita inyección SQL por diseño.
             _context.Inmuebles.Add(inmueble);
             await _context.SaveChangesAsync();
 
@@ -139,14 +164,12 @@ namespace HomeFlowOficial.Controllers
 
         private async Task CargarListasSelect()
         {
+            var corredorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var propietarios = await _context.Propietarios
                 .AsNoTracking()
-                ////.Where(p => p.chec)
-                .Select(p => new
-                {
-                    p.Id,
-                    Nombre = p.Persona.Nombres + " " + p.Persona.ApellidoPaterno + " (" + p.Persona.Rut + ")"
-                })
+                .Where(p => p.CorredorId == corredorId) // <- solo los suyos
+                .Select(p => new { p.Id, Nombre = p.Persona.Nombres + " " + p.Persona.ApellidoPaterno + " (" + p.Persona.Rut + ")" })
                 .OrderBy(p => p.Nombre)
                 .ToListAsync();
 
